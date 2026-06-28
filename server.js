@@ -242,7 +242,36 @@ app.get('/api/rooms/:roomId/messages', async (req, res) => {
 });
 
 // ---------- Admin (moderation) API — all require X-Admin-Key ----------
+// List ALL rooms (public + private) — for admin oversight only
+app.get('/api/admin/rooms', requireAdmin, async (req, res) => {
+  try {
+    const rooms = await Room.find()
+      .sort({ lastActivity: -1 })
+      .limit(500)
+      .select('roomId topic isPrivate createdAt lastActivity -_id')
+      .lean();
 
+    const roomIds = rooms.map(r => r.roomId);
+    const counts = await Message.aggregate([
+      { $match: { roomId: { $in: roomIds } } },
+      { $group: { _id: '$roomId', count: { $sum: 1 } } }
+    ]);
+    const countMap = Object.fromEntries(counts.map(c => [c._id, c.count]));
+
+    res.json(rooms.map(r => ({
+      roomId: r.roomId,
+      topic: r.topic,
+      isPrivate: r.isPrivate,
+      messageCount: countMap[r.roomId] || 0,
+      online: userCount(r.roomId),
+      createdAt: r.createdAt,
+      lastActivity: r.lastActivity
+    })));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'SERVER_ERROR' });
+  }
+});
 // List current bans, most recent first
 app.get('/api/admin/bans', requireAdmin, async (req, res) => {
   try {
