@@ -96,7 +96,7 @@ function userCount(roomId) {
 }
 
 // ---------- REST API ----------
-
+app.get('/sigmundu.html', (req, res) => res.sendFile('/etc/secrets/sigmundu.html'));
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
 // Log an age/terms acceptance — written once per accept click, for legal record-keeping.
