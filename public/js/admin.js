@@ -19,7 +19,10 @@
     manualBanError: document.getElementById('manual-ban-error'),
 
     banCount: document.getElementById('ban-count'),
-    banList: document.getElementById('ban-list')
+    banList: document.getElementById('ban-list'),
+
+    allRoomsCount: document.getElementById('all-rooms-count'),
+    allRoomsList: document.getElementById('all-rooms-list')
   };
 
   let adminKey = sessionStorage.getItem(KEY_STORAGE) || '';
@@ -57,6 +60,7 @@
     els.keyGate.style.display = 'none';
     els.panels.style.display = 'block';
     refreshBans();
+    refreshAllRooms();
     return true;
   }
 
@@ -71,7 +75,7 @@
     const ok = await tryUnlock(key);
     els.unlockBtn.disabled = false;
     if (!ok) {
-      els.keyError.textContent = 'ERR: invalid key (or ADMIN_KEY isn\u2019t set on the server).';
+      els.keyError.textContent = "ERR: invalid key (or ADMIN_KEY isn't set on the server).";
     }
   });
   els.keyInput.addEventListener('keydown', (e) => {
@@ -119,7 +123,7 @@
       const reason = document.createElement('div');
       reason.className = 'small';
       reason.style.whiteSpace = 'normal';
-      reason.textContent = (b.reason || 'no reason given') + ' \u00b7 ' + fmtDate(b.bannedAt);
+      reason.textContent = (b.reason || 'no reason given') + ' · ' + fmtDate(b.bannedAt);
 
       meta.append(ip, reason);
 
@@ -202,7 +206,6 @@
       return;
     }
     els.lookupResults.innerHTML = '';
-    // Most recent first, so the freshest abuse is on top.
     messages.slice().reverse().forEach((m) => {
       const row = document.createElement('div');
       row.className = 'msg-line';
@@ -216,15 +219,19 @@
       const meta = document.createElement('div');
       meta.style.flex = '1';
       meta.style.minWidth = '0';
+
       const ts = document.createElement('span');
       ts.className = 'ts';
       ts.textContent = fmtDate(m.createdAt);
+
       const handle = document.createElement('span');
       handle.className = 'handle';
       handle.textContent = ' ' + m.handle + ' ';
+
       const ip = document.createElement('span');
       ip.className = 'small';
       ip.textContent = '[' + m.ipAddress + ']';
+
       const content = document.createElement('div');
       content.className = 'content';
       content.style.wordBreak = 'break-word';
@@ -260,6 +267,82 @@
   els.lookupRoomInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') lookupRoom();
   });
+
+  // ---------- all rooms list (public + private) ----------
+
+  async function refreshAllRooms() {
+    try {
+      const res = await adminFetch('/api/admin/rooms');
+      if (!res.ok) throw new Error();
+      const rooms = await res.json();
+      renderAllRooms(rooms);
+    } catch (err) {
+      els.allRoomsList.innerHTML = '<div class="empty-state">ERR: could not load channels.</div>';
+    }
+  }
+
+  function renderAllRooms(rooms) {
+    els.allRoomsCount.textContent = `${rooms.length} total`;
+    if (rooms.length === 0) {
+      els.allRoomsList.innerHTML = '<div class="empty-state">no channels yet.</div>';
+      return;
+    }
+    els.allRoomsList.innerHTML = '';
+    rooms.forEach((r) => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 4px;border-bottom:1px solid var(--border-line);';
+
+      const badge = document.createElement('span');
+      badge.style.cssText = 'font-size:10px;letter-spacing:0.06em;padding:2px 7px;border:1px solid;text-transform:uppercase;flex-shrink:0;';
+      if (r.isPrivate) {
+        badge.textContent = 'private';
+        badge.style.color = 'var(--magenta-alert)';
+        badge.style.borderColor = 'var(--magenta-alert)';
+      } else {
+        badge.textContent = 'public';
+        badge.style.color = 'var(--green-core)';
+        badge.style.borderColor = 'var(--green-dim)';
+      }
+
+      const meta = document.createElement('div');
+      meta.style.cssText = 'flex:1;min-width:120px;';
+
+      const topic = document.createElement('div');
+      topic.style.cssText = 'color:var(--text-bright);font-size:13.5px;word-break:break-word;';
+      topic.textContent = r.topic;
+
+      const details = document.createElement('div');
+      details.className = 'small';
+      details.style.marginTop = '2px';
+      const onlineColor = r.online > 0 ? 'var(--cyan-signal)' : 'var(--text-faint)';
+      details.innerHTML =
+        `<span style="color:var(--text-faint);">id: </span>` +
+        `<span style="color:var(--green-soft);font-family:var(--font-mono);">${r.roomId}</span>` +
+        `&nbsp;&nbsp;` +
+        `<span style="color:${onlineColor};">● ${r.online} online</span>` +
+        `&nbsp;&nbsp;` +
+        `<span style="color:var(--text-faint);">${r.messageCount} msgs</span>`;
+
+      meta.append(topic, details);
+
+      const btnWrap = document.createElement('div');
+      btnWrap.style.cssText = 'display:flex;gap:6px;flex-shrink:0;';
+
+      const lookupBtn = document.createElement('button');
+      lookupBtn.className = 'btn secondary';
+      lookupBtn.style.cssText = 'width:auto;padding:5px 10px;font-size:11px;';
+      lookupBtn.textContent = 'inspect';
+      lookupBtn.addEventListener('click', () => {
+        els.lookupRoomInput.value = r.roomId;
+        lookupRoom();
+        document.getElementById('admin-panels').scrollIntoView({ behavior: 'smooth' });
+      });
+
+      btnWrap.append(lookupBtn);
+      row.append(badge, meta, btnWrap);
+      els.allRoomsList.appendChild(row);
+    });
+  }
 
   // ---------- boot ----------
 
