@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>0625 :// anonymous terminals</title>
+<meta name="description" content="0625 — no-account, text + voice chatrooms. Public or private. No photo/video uploads, ever." />
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+<canvas id="matrix-rain"></canvas>
+<div class="scanlines"></div>
+<div class="crt-vignette"></div>
+
+<div id="boot-overlay"><span class="cursor"></span></div>
+<button id="boot-skip">SKIP [ESC]</button>
+
+<div class="page">
+  <div class="container">
+
+    <h1 class="brand">0625<span class="slash">://</span></h1>
+    <p class="tagline">no accounts. no profiles. <span class="hl">just a channel and a handle.</span><br />text + voice only — no photo or video uploads, ever.</p>
+
+    <div class="term-window">
+      <div class="term-titlebar">
+        <span class="term-dot"></span><span class="term-dot cyan"></span><span class="term-dot magenta"></span>
+        <span class="term-path">guest@0625:~$ new_channel</span>
+      </div>
+      <div class="term-body">
+        <form id="create-form">
+          <div class="field">
+            <label for="topic-input">Channel topic</label>
+            <div class="shell-input-row">
+              <span class="prompt-chevron">&gt;</span>
+              <input type="text" id="topic-input" maxlength="120"
+                placeholder="e.g. late-night synth gear, conspiracy theories, lo-fi beats..."
+                autocomplete="off" required />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Visibility</label>
+            <div class="toggle-row">
+              <button type="button" class="toggle-btn active" data-mode="public" id="mode-public">
+                ● PUBLIC — listed for everyone
+              </button>
+              <button type="button" class="toggle-btn" data-mode="private" id="mode-private">
+                ● PRIVATE — link only
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn" id="create-btn">[ INITIALIZE CHANNEL ]</button>
+          <div class="error-text" id="create-error"></div>
+        </form>
+      </div>
+    </div>
+
+    <div class="term-window">
+      <div class="term-titlebar">
+        <span class="term-dot cyan"></span>
+        <span class="term-path">guest@0625:~$ join --code</span>
+      </div>
+      <div class="term-body">
+        <div class="field" style="margin-bottom:0">
+          <label for="code-input">Have a channel code or link?</label>
+          <div class="row gap-8">
+            <div class="shell-input-row" style="flex:1">
+              <span class="prompt-chevron">#</span>
+              <input type="text" id="code-input" placeholder="paste code, e.g. a1b2c3d4" autocomplete="off" />
+            </div>
+            <button class="btn secondary" id="join-btn" style="width:auto;padding:11px 16px;">CONNECT</button>
+          </div>
+          <div class="error-text" id="join-error"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="list-header">
+      <h2>// public channels</h2>
+      <span class="list-count" id="room-count">scanning...</span>
+    </div>
+    <div class="term-window">
+      <div class="term-body" style="padding: 4px 12px;">
+        <div id="room-list"><div class="empty-state">scanning frequency...</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="site-footer">
+    no accounts · text + voice only, no photo/video uploads · public channels are public — say nothing you wouldn't want logged
+  </footer>
+</div>
+
+<script src="/js/matrix-rain.js"></script>
+<script src="/js/boot.js"></script>
+<script src="/js/utils.js"></script>
+<script src="/js/consent.js"></script>
+<script src="/js/home.js"></script>
+</body>
+</html>

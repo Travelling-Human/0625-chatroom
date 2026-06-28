@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+<title>:// channel — 0625</title>
+<link rel="stylesheet" href="/css/style.css" />
+<style>
+  #matrix-rain { opacity: 0.16; }
+  body { overflow: hidden; }
+</style>
+</head>
+<body>
+
+<canvas id="matrix-rain"></canvas>
+<div class="scanlines"></div>
+<div class="crt-vignette"></div>
+
+<div id="boot-overlay"><span class="cursor"></span></div>
+<button id="boot-skip">SKIP [ESC]</button>
+
+<div class="page">
+  <div class="chat-shell">
+
+    <div class="room-header">
+      <a href="/" class="icon-btn" title="back to index" style="text-decoration:none;">←</a>
+      <span class="room-title" id="room-title">connecting...</span>
+      <span class="visibility-pill" id="visibility-pill" style="display:none;"></span>
+      <button class="owner-toggle-hidden btn secondary" id="owner-toggle-btn"
+        style="display:none;width:auto;padding:6px 10px;font-size:11px;">make private</button>
+      <span class="online-tag" id="online-tag"></span>
+      <button class="copy-chip" id="copy-link-btn" title="copy share link">copy link</button>
+    </div>
+
+    <div class="chat-log" id="chat-log">
+      <div class="empty-state">establishing connection...</div>
+    </div>
+    <div class="typing-indicator" id="typing-indicator"></div>
+
+    <div class="composer">
+      <div class="emoji-panel" id="emoji-panel"></div>
+      <div class="rec-indicator" id="rec-indicator">
+        <span class="rec-dot"></span>
+        <span id="rec-timer">REC 0:00</span>
+        <span class="small">tap mic to send · max 1:00</span>
+        <button class="icon-btn" id="cancel-rec-btn" title="cancel" style="margin-left:auto;">×</button>
+      </div>
+      <div class="composer-row">
+        <span class="prompt-chevron">&gt;</span>
+        <input type="text" id="msg-input" placeholder="type your transmission..." maxlength="2000" autocomplete="off" />
+        <button class="icon-btn" id="emoji-btn" title="insert emoji">🙂</button>
+        <button class="icon-btn mic" id="mic-btn" title="record voice message">●</button>
+        <button class="icon-btn send" id="send-btn" title="send">➤</button>
+      </div>
+      <div class="error-text" id="composer-error"></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal-backdrop" id="error-modal">
+  <div class="term-window modal-box">
+    <div class="term-titlebar">
+      <span class="term-dot magenta"></span>
+      <span class="term-path">guest@0625:~$ system_error</span>
+    </div>
+    <div class="term-body">
+      <p id="error-modal-text" class="glow-magenta" style="margin-top:0;"></p>
+      <a href="/" class="btn secondary" style="display:block;">[ RETURN TO INDEX ]</a>
+    </div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/matrix-rain.js"></script>
+<script src="/js/boot.js"></script>
+<script src="/js/utils.js"></script>
+<script src="/js/consent.js"></script>
+<script src="/js/room.js"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+node_modules/
+.env
+*.log
+.DS_Store
+
+# Admin console — kept out of git intentionally.
+# Deploy via Render Secret Files instead (see README).
+public/sigmundu.html
