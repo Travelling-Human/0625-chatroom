@@ -12,15 +12,23 @@
   }
 
   // One handle per browser tab session — gives continuity without any account.
-  function getSessionHandle() {
-    let handle = sessionStorage.getItem('hc_handle');
-    if (!handle) {
-      handle = generateHandle();
-      sessionStorage.setItem('hc_handle', handle);
-    }
-    return handle;
-  }
+  async function fetchHnadle() {
+    const CACHE_KEY = '0625_handle';
+    try{
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) return cached;
+    } catch (e) {}
 
+    try{
+      const res = await fetch('api/me/handle');
+      const data = await res.json();
+      const handle = data.handle || generateHandle();
+      try{ localStorage.setItem(CACHE_KEY, handle); } catch (e) {}
+      return handle;
+    } catch (e) {
+      return generateHandle();
+    }
+  }
   // Owner tokens for rooms this device created, so it can toggle visibility later.
   const OWNED_KEY = '0625_owned_rooms';
 
@@ -69,7 +77,7 @@
 
   window.HC = {
     generateHandle,
-    getSessionHandle,
+    fetchHandle,
     getOwnedRooms,
     saveOwnedRoom,
     getOwnerToken,
