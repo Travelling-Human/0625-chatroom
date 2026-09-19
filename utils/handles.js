@@ -1,7 +1,10 @@
+const crypto = require('crypto')
+
 const CODENAMES = [
   'GHOST', 'PHANTOM', 'SHADOW', 'CIPHER', 'NEON', 'VOID', 'RAZOR', 'NULLBYTE',
   'PULSE', 'ECHO', 'VIPER', 'CHROME', 'GLITCH', 'ROGUE', 'STATIC', 'VECTOR',
-  'ZERO_DAY', 'CRYPT', 'NEXUS', 'BLADE', 'WRAITH', 'SPECTRE', 'TROJAN', 'PROXY'
+  'ZERO_DAY', 'CRYPT', 'NEXUS', 'BLADE', 'WRAITH', 'SPECTRE', 'TROJAN', 'PROXY',
+  'MALAZAN', 'ZETH', 'AZRAEL', 'SABRIEL', 'RING'
 ];
 
 function generateHandle() {
@@ -10,4 +13,13 @@ function generateHandle() {
   return `${name}_${id}`;
 }
 
-module.exports = { generateHandle };
+function deterministicHandle(ip, salt) {
+  const hash = crypto
+    .createHmac('sha256', salt || 'default-salt')
+    .update(ip || '0.0.0.0')
+    .digest('hex')
+  const nameIndex = parseInt(hash.slice(0, 8), 16) % CODENAME.length;
+  const numSuffix = (parseInt(hash.slice(8, 16), 16) % 9000) + 1000;
+  return `${CODENAMES[nameIndex]}_${numSuffix}`;
+}
+module.exports = { generateHandle, deterministicHandle };
