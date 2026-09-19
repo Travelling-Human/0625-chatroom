@@ -12,7 +12,7 @@
   }
 
   // One handle per browser tab session — gives continuity without any account.
-  async function fetchHnadle() {
+  async function fetchHandle() {
     const CACHE_KEY = '0625_handle';
     try{
       const cached = localStorage.getItem(CACHE_KEY);
