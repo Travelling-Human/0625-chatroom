@@ -12,13 +12,14 @@ const Room = require('./models/Room');
 const Message = require('./models/Message');
 const Consent = require('./models/Consent');
 const Ban = require('./models/Ban');
-const { generateHandle } = require('./utils/handles');
+const { generateHandle, deterministicHandle } = require('./utils/handles');
 
 const PORT = process.env.PORT || 3000;
 const MAX_VOICE_SECONDS = Number(process.env.MAX_VOICE_SECONDS || 60);
 const MAX_VOICE_BYTES = Number(process.env.MAX_VOICE_BYTES || 2 * 1024 * 1024);
 const MONGODB_URI = process.env.MONGODB_URI;
 const ADMIN_KEY = process.env.ADMIN_KEY || '';
+const HANDLE_SALT = process.env.HANDLE_SALT || 'default-salt-change-me';
 
 if (!MONGODB_URI) {
   console.error('\n[FATAL] MONGODB_URI is not set. Copy .env.example to .env and fill it in.\n');
@@ -98,6 +99,10 @@ function userCount(roomId) {
 // ---------- REST API ----------
 app.get('/sigmundu.html', (req, res) => res.sendFile('/etc/secrets/sigmundu.html'));
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+app.get('api/me/handle', (req, res) => {
+  const handle = deterministicHandle(req.ip, HANDLE_SALT);
+  res.json({ handle });
+});
 
 // Log an age/terms acceptance — written once per accept click, for legal record-keeping.
 app.post('/api/consent', async (req, res) => {
