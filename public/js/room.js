@@ -37,7 +37,7 @@
     return;
   }
 
-  const myHandle = HC.getSessionHandle();
+  const myHandle = await HC.fetchHandle();
   let roomState = { isPrivate: false, topic: '' };
   let ownerToken = HC.getOwnerToken(roomId);
 
