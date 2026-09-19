@@ -1,5 +1,5 @@
 (function () {
-  HCConsent.ensure(function () {
+  HCConsent.ensure(async function () {
   const params = new URLSearchParams(window.location.search);
   const roomId = (params.get('id') || '').trim();
 
