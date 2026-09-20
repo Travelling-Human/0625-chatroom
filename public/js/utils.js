@@ -20,7 +20,7 @@
     } catch (e) {}
 
     try{
-      const res = await fetch('api/me/handle');
+      const res = await fetch('/api/me/handle');
       const data = await res.json();
       const handle = data.handle || generateHandle();
       try{ localStorage.setItem(CACHE_KEY, handle); } catch (e) {}
