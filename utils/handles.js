@@ -18,7 +18,7 @@ function deterministicHandle(ip, salt) {
     .createHmac('sha256', salt || 'default-salt')
     .update(ip || '0.0.0.0')
     .digest('hex')
-  const nameIndex = parseInt(hash.slice(0, 8), 16) % CODENAME.length;
+  const nameIndex = parseInt(hash.slice(0, 8), 16) % CODENAMES.length;
   const numSuffix = (parseInt(hash.slice(8, 16), 16) % 9000) + 1000;
   return `${CODENAMES[nameIndex]}_${numSuffix}`;
 }
