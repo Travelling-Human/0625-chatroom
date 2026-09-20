@@ -99,7 +99,7 @@ function userCount(roomId) {
 // ---------- REST API ----------
 app.get('/sigmundu.html', (req, res) => res.sendFile('/etc/secrets/sigmundu.html'));
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
-app.get('api/me/handle', (req, res) => {
+app.get('/api/me/handle', (req, res) => {
   const handle = deterministicHandle(req.ip, HANDLE_SALT);
   res.json({ handle });
 });
